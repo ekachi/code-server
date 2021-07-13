@@ -156,7 +156,21 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
   return null
 }
 
-try {
+/**
+ * A helper function to encapsulate all the
+ * logic used in this file.
+ *
+ * It does the following:
+ * - grabs the options using getOptions
+ * - gets the nlsConfig
+ * - gets the loader
+ * - sets loader on self.require
+ * - sets the body background color to match the theme
+ *
+ * We purposely include all of this in a single function
+ * so that it's easier to test.
+ */
+export function main() {
   const options = getOptions()
   const nlsConfig = getNlsConfiguration(document)
 
@@ -195,6 +209,10 @@ try {
   ;(self.require as FixMeLater) = loader
 
   setBodyBackgroundToThemeBackgroundColor(document, localStorage)
+}
+
+try {
+  main()
 } catch (error) {
   console.error(error)
 }
