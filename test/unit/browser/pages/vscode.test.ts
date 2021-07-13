@@ -177,34 +177,6 @@ describe("vscode", () => {
     })
   })
   describe("getLoader", () => {
-    it("should throw an error if window is undefined in context", () => {
-      const options = {
-        base: "/",
-        csStaticBase: "/hello",
-        logLevel: 1,
-      }
-      const nlsConfig = {
-        first: "Jane",
-        last: "Doe",
-        locale: "en",
-        availableLanguages: {},
-      }
-      const errorMsgPrefix = "[vscode]"
-      const errorMessage = `${errorMsgPrefix} Could not get loader. window is undefined or missing.`
-      // @ts-expect-error We need to test when window is undefined
-      window = undefined
-      expect(() => {
-        if (typeof window === "undefined") {
-          throw new Error(errorMessage)
-        }
-
-        getLoader({
-          origin: "localhost",
-          nlsConfig: nlsConfig,
-          options,
-        })
-      }).toThrowError(errorMessage)
-    })
     it("should throw an error if options.csStaticBase is undefined or an empty string in context", () => {
       let options:
         | {
