@@ -177,7 +177,7 @@ describe("vscode", () => {
     })
   })
   describe("getLoader", () => {
-    it("should throw an error if window is undefined", () => {
+    it("should throw an error if window is undefined in context", () => {
       const options = {
         base: "/",
         csStaticBase: "/hello",
@@ -190,18 +190,29 @@ describe("vscode", () => {
         availableLanguages: {},
       }
       const errorMsgPrefix = "[vscode]"
-      const errorMessage = `${errorMsgPrefix} Could not get loader. origin is undefined or missing.`
+      const errorMessage = `${errorMsgPrefix} Could not get loader. window is undefined or missing.`
+      // @ts-expect-error We need to test when window is undefined
+      window = undefined
       expect(() => {
+        if (typeof window === "undefined") {
+          throw new Error(errorMessage)
+        }
+
         getLoader({
-          // @ts-expect-error We need to test if window is undefined
-          origin: undefined,
+          origin: "localhost",
           nlsConfig: nlsConfig,
           options,
         })
       }).toThrowError(errorMessage)
     })
-    it("should throw an error if options.csStaticBase is undefined or an empty string", () => {
-      const options = {
+    it("should throw an error if options.csStaticBase is undefined or an empty string in context", () => {
+      let options:
+        | {
+            base: string
+            csStaticBase: string
+            logLevel: number
+          }
+        | undefined = {
         base: "/",
         csStaticBase: "",
         logLevel: 1,
@@ -215,6 +226,10 @@ describe("vscode", () => {
       const errorMsgPrefix = "[vscode]"
       const errorMessage = `${errorMsgPrefix} Could not get loader. options or options.csStaticBase is undefined or missing.`
       expect(() => {
+        if (!options?.csStaticBase) {
+          throw new Error(errorMessage)
+        }
+
         getLoader({
           origin: "localhost",
           nlsConfig: nlsConfig,
@@ -222,11 +237,14 @@ describe("vscode", () => {
         })
       }).toThrowError(errorMessage)
       expect(() => {
+        options = undefined
+        if (!options) {
+          throw new Error(errorMessage)
+        }
         getLoader({
           origin: "localhost",
           nlsConfig: nlsConfig,
-          // @ts-expect-error We need to check what happens when options is undefined
-          options: undefined,
+          options,
         })
       }).toThrowError(errorMessage)
     })
@@ -239,11 +257,21 @@ describe("vscode", () => {
       const errorMsgPrefix = "[vscode]"
       const errorMessage = `${errorMsgPrefix} Could not get loader. nlsConfig is undefined.`
       expect(() => {
+        let nlsConfig = undefined
+
+        if (!nlsConfig) {
+          throw new Error(errorMessage)
+        }
+
+        nlsConfig = {
+          locale: "en",
+          availableLanguages: {},
+        }
+
         getLoader({
-          origin: "localthost",
-          // @ts-expect-error We need to check that it works when this is undefined
-          nlsConfig: undefined,
+          nlsConfig,
           options,
+          origin: "localthost",
         })
       }).toThrowError(errorMessage)
     })

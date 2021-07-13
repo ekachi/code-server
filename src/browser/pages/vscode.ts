@@ -77,20 +77,6 @@ type Loader = {
  * it's easier to test.
  **/
 export function getLoader({ origin, nlsConfig, options }: GetLoaderParams) {
-  const errorMsgPrefix = "[vscode]"
-
-  if (!origin) {
-    throw new Error(`${errorMsgPrefix} Could not get loader. origin is undefined or missing.`)
-  }
-
-  if (!options || !options.csStaticBase) {
-    throw new Error(`${errorMsgPrefix} Could not get loader. options or options.csStaticBase is undefined or missing.`)
-  }
-
-  if (!nlsConfig) {
-    throw new Error(`${errorMsgPrefix} Could not get loader. nlsConfig is undefined.`)
-  }
-
   const loader: Loader = {
     // Without the full URL VS Code will try to load file://.
     baseUrl: `${origin}${options.csStaticBase}/lib/vscode/out`,
