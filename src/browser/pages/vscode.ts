@@ -156,6 +156,30 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
   return null
 }
 
+export function registerLoadBundleOnNlsConfig(nlsConfig: NlsConfiguration, base: string) {
+  const bundles: {
+    [key: string]: string
+  } = {}
+
+  type LoadBundleCallback = (_: undefined, result?: string) => void
+
+  nlsConfig.loadBundle = (bundle: string, _language: string, cb: LoadBundleCallback): void => {
+    const result = bundles[bundle]
+    if (result) {
+      return cb(undefined, result)
+    }
+    // FIXME: Only works if path separators are /.
+    const path = nlsConfig._resolvedLanguagePackCoreLocation + "/" + bundle.replace(/\//g, "!") + ".nls.json"
+    fetch(`${base}/vscode/resource/?path=${encodeURIComponent(path)}`)
+      .then((response) => response.json())
+      .then((json) => {
+        bundles[bundle] = json
+        cb(undefined, json)
+      })
+      .catch(cb)
+  }
+}
+
 /**
  * A helper function to encapsulate all the
  * logic used in this file.
@@ -163,6 +187,7 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
  * It does the following:
  * - grabs the options using getOptions
  * - gets the nlsConfig
+ * - registers loadBundle on nlsConfig
  * - gets the loader
  * - sets loader on self.require
  * - sets the body background color to match the theme
@@ -175,23 +200,7 @@ export function main() {
   const nlsConfig = getNlsConfiguration(document)
 
   if (nlsConfig._resolvedLanguagePackCoreLocation) {
-    const bundles = Object.create(null)
-
-    nlsConfig.loadBundle = (bundle: FixMeLater, _language: FixMeLater, cb: FixMeLater): void => {
-      const result = bundles[bundle]
-      if (result) {
-        return cb(undefined, result)
-      }
-      // FIXME: Only works if path separators are /.
-      const path = nlsConfig._resolvedLanguagePackCoreLocation + "/" + bundle.replace(/\//g, "!") + ".nls.json"
-      fetch(`${options.base}/vscode/resource/?path=${encodeURIComponent(path)}`)
-        .then((response) => response.json())
-        .then((json) => {
-          bundles[bundle] = json
-          cb(undefined, json)
-        })
-        .catch(cb)
-    }
+    registerLoadBundleOnNlsConfig(nlsConfig, options.base)
   }
 
   const loader = getLoader({
