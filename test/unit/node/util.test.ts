@@ -479,7 +479,7 @@ describe("pathToFsPath", () => {
     expect(util.pathToFsPath(["/hello/foo", "/hello/bar"])).toBe("/hello/foo")
   })
   it("should replace / with \\ on Windows", () => {
-    let ORIGINAL_PLATFORM = process.platform
+    const ORIGINAL_PLATFORM = process.platform
 
     Object.defineProperty(process, "platform", {
       value: "win32",
