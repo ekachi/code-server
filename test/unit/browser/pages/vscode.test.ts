@@ -289,7 +289,7 @@ describe("vscode", () => {
       })
     })
   })
-  describe.only("main", () => {
+  describe("main", () => {
     beforeEach(() => {
       const { window } = new JSDOM()
       global.document = window.document
