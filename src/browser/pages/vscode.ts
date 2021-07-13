@@ -1,10 +1,8 @@
 import { getOptions, Options } from "../../common/util"
 import "../register"
 
-const options = getOptions()
-
-// TODO: Add proper types.
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// TODO@jsjoeio: Add proper types.
+type FixMeLater = any
 
 // NOTE@jsjoeio
 // This lives here ../../../lib/vscode/src/vs/base/common/platform.ts#L106
@@ -19,7 +17,7 @@ type NlsConfiguration = {
   _resolvedLanguagePackCoreLocation?: string
   _corruptedFile?: string
   _languagePackSupport?: boolean
-  loadBundle?: any
+  loadBundle?: FixMeLater
 }
 
 /**
@@ -114,41 +112,9 @@ export function getLoader({ origin, nlsConfig, options }: GetLoaderParams) {
   return loader
 }
 
-try {
-  const nlsConfig = getNlsConfiguration(document)
-  if (nlsConfig._resolvedLanguagePackCoreLocation) {
-    const bundles = Object.create(null)
-    nlsConfig.loadBundle = (bundle: any, _language: any, cb: any): void => {
-      const result = bundles[bundle]
-      if (result) {
-        return cb(undefined, result)
-      }
-      // FIXME: Only works if path separators are /.
-      const path = nlsConfig._resolvedLanguagePackCoreLocation + "/" + bundle.replace(/\//g, "!") + ".nls.json"
-      fetch(`${options.base}/vscode/resource/?path=${encodeURIComponent(path)}`)
-        .then((response) => response.json())
-        .then((json) => {
-          bundles[bundle] = json
-          cb(undefined, json)
-        })
-        .catch(cb)
-    }
-  }
-  // TODO@jsjoeio
-  // I'm not sure how to properly type cast this
-  // This might be our best bet
-  // Source: https://stackoverflow.com/a/30740935
-  type FixMeLater = any
-  ;(self.require as FixMeLater) = getLoader({
-    nlsConfig,
-    options,
-    origin: window.location.origin,
-  })
-} catch (error) {
-  console.error(error)
-  /* Probably fine. */
-}
-
+/**
+ * Sets the body background color to match the theme.
+ */
 export function setBodyBackgroundToThemeBackgroundColor(document: Document, localStorage: Storage) {
   const errorMsgPrefix = "[vscode]"
 
@@ -205,8 +171,44 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
 }
 
 try {
+  const options = getOptions()
+  const nlsConfig = getNlsConfiguration(document)
+
+  if (nlsConfig._resolvedLanguagePackCoreLocation) {
+    const bundles = Object.create(null)
+
+    nlsConfig.loadBundle = (bundle: FixMeLater, _language: FixMeLater, cb: FixMeLater): void => {
+      const result = bundles[bundle]
+      if (result) {
+        return cb(undefined, result)
+      }
+      // FIXME: Only works if path separators are /.
+      const path = nlsConfig._resolvedLanguagePackCoreLocation + "/" + bundle.replace(/\//g, "!") + ".nls.json"
+      fetch(`${options.base}/vscode/resource/?path=${encodeURIComponent(path)}`)
+        .then((response) => response.json())
+        .then((json) => {
+          bundles[bundle] = json
+          cb(undefined, json)
+        })
+        .catch(cb)
+    }
+  }
+
+  const loader = getLoader({
+    nlsConfig,
+    options,
+    origin: window.location.origin,
+  })
+
+  // TODO@jsjoeio
+  // I'm not sure how to properly type cast this
+  // This might be our best bet
+  // Source: https://stackoverflow.com/a/30740935
+  // This object on self.require is what configures the loader
+  // and tells it how to load files that get imported.
+  ;(self.require as FixMeLater) = loader
+
   setBodyBackgroundToThemeBackgroundColor(document, localStorage)
 } catch (error) {
-  console.error("Something went wrong setting the body background to the theme background color.")
   console.error(error)
 }
