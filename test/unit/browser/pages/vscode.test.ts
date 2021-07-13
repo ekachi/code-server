@@ -289,6 +289,8 @@ describe("vscode", () => {
       })
     })
   })
+  // TODO@jsjoeio
+  // add tests for registerLoadBundleOnNlsConfig
   describe("main", () => {
     beforeEach(() => {
       const { window } = new JSDOM()
