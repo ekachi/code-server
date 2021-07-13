@@ -191,8 +191,8 @@ describe("vscode", () => {
       }
       const errorMsgPrefix = "[vscode]"
       const errorMessage = `${errorMsgPrefix} Could not get loader. window is undefined or missing.`
-      /* eslint-disable no-global-assign */
-      window = undefined as unknown as Window & typeof globalThis
+      // eslint-disable-next-line no-global-assign
+      global.window = undefined as unknown as Window & typeof globalThis
       expect(() => {
         if (typeof window === "undefined") {
           throw new Error(errorMessage)
