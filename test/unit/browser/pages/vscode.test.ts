@@ -7,6 +7,7 @@ import {
   nlsConfigElementId,
   getLoader,
   setBodyBackgroundToThemeBackgroundColor,
+  main,
 } from "../../../../src/browser/pages/vscode"
 
 describe("vscode", () => {
@@ -286,6 +287,39 @@ describe("vscode", () => {
           locale: "en",
         },
       })
+    })
+  })
+  describe.only("main", () => {
+    beforeEach(() => {
+      const { window } = new JSDOM()
+      global.document = window.document
+
+      const mockElement = document.createElement("div")
+      const dataSettings = {
+        first: "Jane",
+        last: "Doe",
+      }
+
+      mockElement.setAttribute("id", nlsConfigElementId)
+      mockElement.setAttribute("data-settings", JSON.stringify(dataSettings))
+      document.body.appendChild(mockElement)
+
+      const test = {
+        colorMap: {
+          [`editor.background`]: "#ff3270",
+        },
+      }
+      localStorage.setItem("colorThemeData", JSON.stringify(test))
+    })
+    afterEach(() => {
+      localStorage.removeItem("colorThemeData")
+    })
+    it("should not throw in browser context", () => {
+      // Assuming we call it in a normal browser context
+      // where everything is defined
+      expect(() => {
+        main()
+      }).not.toThrow()
     })
   })
 })
