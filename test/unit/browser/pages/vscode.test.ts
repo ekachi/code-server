@@ -85,24 +85,6 @@ describe("vscode", () => {
 
       localStorage.removeItem("colorThemeData")
     })
-    it("should throw an error if Document is undefined", () => {
-      const errorMsgPrefix = "[vscode]"
-      const errorMessage = `${errorMsgPrefix} Could not set body background to theme background color. Document is undefined.`
-
-      expect(() => {
-        // @ts-expect-error We need to test when document is undefined
-        setBodyBackgroundToThemeBackgroundColor(undefined, localStorage)
-      }).toThrowError(errorMessage)
-    })
-    it("should throw an error if localStorage is undefined", () => {
-      const errorMsgPrefix = "[vscode]"
-      const errorMessage = `${errorMsgPrefix} Could not set body background to theme background color. localStorage is undefined.`
-
-      expect(() => {
-        // @ts-expect-error We need to test when localStorage is undefined
-        setBodyBackgroundToThemeBackgroundColor(document, undefined)
-      }).toThrowError(errorMessage)
-    })
     it("should throw an error if it can't find colorThemeData in localStorage", () => {
       const errorMsgPrefix = "[vscode]"
       const errorMessage = `${errorMsgPrefix} Could not set body background to theme background color. Could not find colorThemeData in localStorage.`

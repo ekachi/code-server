@@ -142,9 +142,9 @@ export function getConfigurationForLoader({ origin, nlsConfig, options }: GetLoa
 /**
  * Sets the body background color to match the theme.
  */
-export function setBodyBackgroundToThemeBackgroundColor(document: Document, localStorage: Storage) {
+export function setBodyBackgroundToThemeBackgroundColor(_document: Document, _localStorage: Storage) {
   const errorMsgPrefix = "[vscode]"
-  const colorThemeData = localStorage.getItem("colorThemeData")
+  const colorThemeData = _localStorage.getItem("colorThemeData")
 
   if (!colorThemeData) {
     throw new Error(
@@ -181,7 +181,7 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
     )
   }
 
-  document.body.style.background = editorBgColor
+  _document.body.style.background = editorBgColor
 
   return null
 }
