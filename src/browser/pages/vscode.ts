@@ -171,9 +171,14 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
 }
 
 export function registerLoadBundleOnNlsConfig(nlsConfig: NlsConfiguration, base: string) {
+  // NOTE@jsjoeio
+  // Not sure why we use Object.create(null) instead of {}
+  // They are not the same
+  // See: https://stackoverflow.com/a/15518712/3015595
+  // We copied this from ../../../lib/vscode/src/bootstrap.js#L143
   const bundles: {
     [key: string]: string
-  } = {}
+  } = Object.create(null)
 
   type LoadBundleCallback = (_: undefined, result?: string) => void
 
