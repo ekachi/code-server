@@ -65,6 +65,8 @@ type GetLoaderParams = {
 type Loader = {
   baseUrl: string
   recordStats: boolean
+  // TODO@jsjoeio: There don't appear to be any types for trustedTypes yet.
+  trustedTypesPolicy: FixMeLater
   paths: {
     [key: string]: string
   }
@@ -85,6 +87,14 @@ export function getConfigurationForLoader({ origin, nlsConfig, options }: GetLoa
     // Without the full URL VS Code will try to load file://.
     baseUrl: `${origin}${options.csStaticBase}/lib/vscode/out`,
     recordStats: true,
+    trustedTypesPolicy: (window as FixMeLater).trustedTypes?.createPolicy("amdLoader", {
+      createScriptURL(value: string): string {
+        if (value.startsWith(window.location.origin)) {
+          return value
+        }
+        throw new Error(`Invalid script url: ${value}`)
+      },
+    }),
     paths: {
       "vscode-textmate": `../node_modules/vscode-textmate/release/main`,
       "vscode-oniguruma": `../node_modules/vscode-oniguruma/release/main`,
