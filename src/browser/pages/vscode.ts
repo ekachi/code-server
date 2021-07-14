@@ -58,6 +58,10 @@ type GetLoaderParams = {
   options: Options
 }
 
+/**
+ * Link to types in the loader source repo
+ * https://github.com/microsoft/vscode-loader/blob/main/src/loader.d.ts#L280
+ */
 type Loader = {
   baseUrl: string
   recordStats: boolean
