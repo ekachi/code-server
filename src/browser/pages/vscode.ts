@@ -33,10 +33,6 @@ export function getNlsConfiguration(document: Document, base: string) {
   const nlsConfigElement = document?.getElementById(nlsConfigElementId)
   const dataSettings = nlsConfigElement?.getAttribute("data-settings")
 
-  if (!document) {
-    throw new Error(`${errorMsgPrefix} Could not parse NLS configuration. document is undefined.`)
-  }
-
   if (!nlsConfigElement) {
     throw new Error(
       `${errorMsgPrefix} Could not parse NLS configuration. Could not find nlsConfigElement with id: ${nlsConfigElementId}`,
@@ -148,17 +144,6 @@ export function getConfigurationForLoader({ origin, nlsConfig, options }: GetLoa
  */
 export function setBodyBackgroundToThemeBackgroundColor(document: Document, localStorage: Storage) {
   const errorMsgPrefix = "[vscode]"
-
-  if (!document) {
-    throw new Error(`${errorMsgPrefix} Could not set body background to theme background color. Document is undefined.`)
-  }
-
-  if (!localStorage) {
-    throw new Error(
-      `${errorMsgPrefix} Could not set body background to theme background color. localStorage is undefined.`,
-    )
-  }
-
   const colorThemeData = localStorage.getItem("colorThemeData")
 
   if (!colorThemeData) {
@@ -209,7 +194,22 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
  * so that it's easier to test.
  */
 export function main(_document: Document | undefined, _window: Window | undefined, _localStorage: Storage | undefined) {
-  // TODO@jsjoeio add checks for _document, _window, _localStorage
+  const errorMsgPrefix = "[vscode]"
+
+  if (!_document) {
+    throw new Error(`${errorMsgPrefix} Could not set body background to theme background color. Document is undefined.`)
+  }
+
+  if (!_window) {
+    throw new Error(`${errorMsgPrefix} Could not set body background to theme background color. Document is undefined.`)
+  }
+
+  if (!_localStorage) {
+    throw new Error(
+      `${errorMsgPrefix} Could not set body background to theme background color. localStorage is undefined.`,
+    )
+  }
+
   const options = getOptions()
   const nlsConfig = getNlsConfiguration(_document, options.base)
 
