@@ -5,7 +5,7 @@ import { JSDOM } from "jsdom"
 import {
   getNlsConfiguration,
   nlsConfigElementId,
-  getLoader,
+  getConfigurationForLoader,
   setBodyBackgroundToThemeBackgroundColor,
   main,
 } from "../../../../src/browser/pages/vscode"
@@ -177,7 +177,7 @@ describe("vscode", () => {
       localStorage.removeItem("colorThemeData")
     })
   })
-  describe("getLoader", () => {
+  describe("getConfigurationForLoader", () => {
     it("should throw an error if options.csStaticBase is undefined or an empty string in context", () => {
       let options:
         | {
@@ -203,7 +203,7 @@ describe("vscode", () => {
           throw new Error(errorMessage)
         }
 
-        getLoader({
+        getConfigurationForLoader({
           origin: "localhost",
           nlsConfig: nlsConfig,
           options,
@@ -214,7 +214,7 @@ describe("vscode", () => {
         if (!options) {
           throw new Error(errorMessage)
         }
-        getLoader({
+        getConfigurationForLoader({
           origin: "localhost",
           nlsConfig: nlsConfig,
           options,
@@ -241,7 +241,7 @@ describe("vscode", () => {
           availableLanguages: {},
         }
 
-        getLoader({
+        getConfigurationForLoader({
           nlsConfig,
           options,
           origin: "localthost",
@@ -260,7 +260,7 @@ describe("vscode", () => {
         locale: "en",
         availableLanguages: {},
       }
-      const loader = getLoader({
+      const loader = getConfigurationForLoader({
         origin: "localhost",
         nlsConfig: nlsConfig,
         options,

@@ -76,7 +76,7 @@ type Loader = {
  * We extracted the logic into a function so that
  * it's easier to test.
  **/
-export function getLoader({ origin, nlsConfig, options }: GetLoaderParams) {
+export function getConfigurationForLoader({ origin, nlsConfig, options }: GetLoaderParams) {
   const loader: Loader = {
     // Without the full URL VS Code will try to load file://.
     baseUrl: `${origin}${options.csStaticBase}/lib/vscode/out`,
@@ -203,7 +203,7 @@ export function main() {
     registerLoadBundleOnNlsConfig(nlsConfig, options.base)
   }
 
-  const loader = getLoader({
+  const loader = getConfigurationForLoader({
     nlsConfig,
     options,
     origin: window.location.origin,
