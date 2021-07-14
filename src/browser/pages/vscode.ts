@@ -28,10 +28,10 @@ type NlsConfiguration = {
  *
  * Make sure to wrap this in a try/catch block when you call it.
  **/
-export function getNlsConfiguration(document: Document) {
+export function getNlsConfiguration(document: Document, base: string) {
   const errorMsgPrefix = "[vscode]"
   const nlsConfigElement = document?.getElementById(nlsConfigElementId)
-  const nlsConfig = nlsConfigElement?.getAttribute("data-settings")
+  const dataSettings = nlsConfigElement?.getAttribute("data-settings")
 
   if (!document) {
     throw new Error(`${errorMsgPrefix} Could not parse NLS configuration. document is undefined.`)
@@ -43,13 +43,44 @@ export function getNlsConfiguration(document: Document) {
     )
   }
 
-  if (!nlsConfig) {
+  if (!dataSettings) {
     throw new Error(
       `${errorMsgPrefix} Could not parse NLS configuration. Found nlsConfigElement but missing data-settings attribute.`,
     )
   }
 
-  return JSON.parse(nlsConfig) as NlsConfiguration
+  const nlsConfig = JSON.parse(dataSettings) as NlsConfiguration
+
+  if (nlsConfig._resolvedLanguagePackCoreLocation) {
+    // NOTE@jsjoeio
+    // Not sure why we use Object.create(null) instead of {}
+    // They are not the same
+    // See: https://stackoverflow.com/a/15518712/3015595
+    // We copied this from ../../../lib/vscode/src/bootstrap.js#L143
+    const bundles: {
+      [key: string]: string
+    } = Object.create(null)
+
+    type LoadBundleCallback = (_: undefined, result?: string) => void
+
+    nlsConfig.loadBundle = (bundle: string, _language: string, cb: LoadBundleCallback): void => {
+      const result = bundles[bundle]
+      if (result) {
+        return cb(undefined, result)
+      }
+      // FIXME: Only works if path separators are /.
+      const path = nlsConfig._resolvedLanguagePackCoreLocation + "/" + bundle.replace(/\//g, "!") + ".nls.json"
+      fetch(`${base}/vscode/resource/?path=${encodeURIComponent(path)}`)
+        .then((response) => response.json())
+        .then((json) => {
+          bundles[bundle] = json
+          cb(undefined, json)
+        })
+        .catch(cb)
+    }
+  }
+
+  return nlsConfig
 }
 
 type GetLoaderParams = {
@@ -170,35 +201,6 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
   return null
 }
 
-export function registerLoadBundleOnNlsConfig(nlsConfig: NlsConfiguration, base: string) {
-  // NOTE@jsjoeio
-  // Not sure why we use Object.create(null) instead of {}
-  // They are not the same
-  // See: https://stackoverflow.com/a/15518712/3015595
-  // We copied this from ../../../lib/vscode/src/bootstrap.js#L143
-  const bundles: {
-    [key: string]: string
-  } = Object.create(null)
-
-  type LoadBundleCallback = (_: undefined, result?: string) => void
-
-  nlsConfig.loadBundle = (bundle: string, _language: string, cb: LoadBundleCallback): void => {
-    const result = bundles[bundle]
-    if (result) {
-      return cb(undefined, result)
-    }
-    // FIXME: Only works if path separators are /.
-    const path = nlsConfig._resolvedLanguagePackCoreLocation + "/" + bundle.replace(/\//g, "!") + ".nls.json"
-    fetch(`${base}/vscode/resource/?path=${encodeURIComponent(path)}`)
-      .then((response) => response.json())
-      .then((json) => {
-        bundles[bundle] = json
-        cb(undefined, json)
-      })
-      .catch(cb)
-  }
-}
-
 /**
  * A helper function to encapsulate all the
  * logic used in this file.
@@ -208,11 +210,7 @@ export function registerLoadBundleOnNlsConfig(nlsConfig: NlsConfiguration, base:
  */
 export function main() {
   const options = getOptions()
-  const nlsConfig = getNlsConfiguration(document)
-
-  if (nlsConfig._resolvedLanguagePackCoreLocation) {
-    registerLoadBundleOnNlsConfig(nlsConfig, options.base)
-  }
+  const nlsConfig = getNlsConfiguration(document, options.base)
 
   const loader = getConfigurationForLoader({
     nlsConfig,
