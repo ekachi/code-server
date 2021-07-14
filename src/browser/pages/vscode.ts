@@ -208,14 +208,15 @@ export function setBodyBackgroundToThemeBackgroundColor(document: Document, loca
  * We purposely include all of this in a single function
  * so that it's easier to test.
  */
-export function main() {
+export function main(_document: Document | undefined, _window: Window | undefined, _localStorage: Storage | undefined) {
+  // TODO@jsjoeio add checks for _document, _window, _localStorage
   const options = getOptions()
-  const nlsConfig = getNlsConfiguration(document, options.base)
+  const nlsConfig = getNlsConfiguration(_document, options.base)
 
   const loader = getConfigurationForLoader({
     nlsConfig,
     options,
-    origin: window.location.origin,
+    origin: _window.location.origin,
   })
 
   // TODO@jsjoeio
@@ -226,11 +227,11 @@ export function main() {
   // and tells it how to load files that get imported.
   ;(self.require as FixMeLater) = loader
 
-  setBodyBackgroundToThemeBackgroundColor(document, localStorage)
+  setBodyBackgroundToThemeBackgroundColor(_document, _localStorage)
 }
 
 try {
-  main()
+  main(document, window, localStorage)
 } catch (error) {
   console.error(error)
 }
