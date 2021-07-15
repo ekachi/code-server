@@ -17,6 +17,11 @@ describe("vscode", () => {
       global.document = window.document
     })
 
+    afterEach(() => {
+      global.window = undefined as unknown as Window & typeof globalThis
+      global.document = undefined as unknown as Document & typeof globalThis
+    })
+
     it("should throw an error if Document is undefined", () => {
       const errorMsgPrefix = "[vscode]"
       const errorMessage = `${errorMsgPrefix} Could not parse NLS configuration. document is undefined.`
@@ -160,6 +165,14 @@ describe("vscode", () => {
     })
   })
   describe("getConfigurationForLoader", () => {
+    beforeEach(() => {
+      const { window } = new JSDOM()
+      global.document = window.document
+    })
+    afterEach(() => {
+      global.window = undefined as unknown as Window & typeof globalThis
+      global.document = undefined as unknown as Document & typeof globalThis
+    })
     it("should return a loader object", () => {
       const options = {
         base: "/",
@@ -173,9 +186,10 @@ describe("vscode", () => {
         availableLanguages: {},
       }
       const loader = getConfigurationForLoader({
+        options,
         origin: "localhost",
         nlsConfig: nlsConfig,
-        options,
+        _window: global.window,
       })
 
       expect(loader).toStrictEqual({
@@ -192,6 +206,13 @@ describe("vscode", () => {
           "xterm-addon-webgl": "../node_modules/xterm-addon-webgl/lib/xterm-addon-webgl.js",
         },
         recordStats: true,
+
+        // TODO@jsjoeio address trustedTypesPolicy part
+        // might need to look up types
+        // and find a way to test the function
+        // maybe extract function into function
+        // and test manually
+        trustedTypesPolicy: {},
         "vs/nls": {
           availableLanguages: {},
           first: "Jane",

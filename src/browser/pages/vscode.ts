@@ -83,6 +83,7 @@ type GetLoaderParams = {
   origin: string
   nlsConfig: NlsConfiguration
   options: Options
+  _window: Window
 }
 
 /**
@@ -109,14 +110,14 @@ type Loader = {
  * We extracted the logic into a function so that
  * it's easier to test.
  **/
-export function getConfigurationForLoader({ origin, nlsConfig, options }: GetLoaderParams) {
+export function getConfigurationForLoader({ origin, nlsConfig, options, _window }: GetLoaderParams) {
   const loader: Loader = {
     // Without the full URL VS Code will try to load file://.
     baseUrl: `${origin}${options.csStaticBase}/lib/vscode/out`,
     recordStats: true,
-    trustedTypesPolicy: (window as FixMeLater).trustedTypes?.createPolicy("amdLoader", {
+    trustedTypesPolicy: (_window as FixMeLater).trustedTypes?.createPolicy("amdLoader", {
       createScriptURL(value: string): string {
-        if (value.startsWith(window.location.origin)) {
+        if (value.startsWith(origin)) {
           return value
         }
         throw new Error(`Invalid script url: ${value}`)
@@ -216,6 +217,7 @@ export function main(_document: Document | undefined, _window: Window | undefine
   const loader = getConfigurationForLoader({
     nlsConfig,
     options,
+    _window,
     origin: _window.location.origin,
   })
 
