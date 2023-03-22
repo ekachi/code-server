@@ -27,7 +27,7 @@ jobs:
   alpine:
     name: Test installer on Alpine
     runs-on: ubuntu-latest
-    container: "alpine:3.14"
+    container: "alpine:3.17"
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
