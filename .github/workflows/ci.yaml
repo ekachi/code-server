@@ -201,7 +201,7 @@ jobs:
         run: npm install -g yarn
 
       - name: Download npm package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npm-package
 
@@ -269,7 +269,7 @@ jobs:
         run: sudo apt install g++-aarch64-linux-gnu
 
       - name: Download npm package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npm-package
 
@@ -313,7 +313,7 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Download npm package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: npm-package
 
@@ -365,7 +365,7 @@ jobs:
             yarn-build-
 
       - name: Download release packages
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: release-packages
           path: ./release-packages
@@ -410,7 +410,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Download release package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: release-packages
           path: ./release-packages
@@ -441,7 +441,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Download release images
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: release-images
           path: ./release-images
