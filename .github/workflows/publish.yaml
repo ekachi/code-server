@@ -14,7 +14,7 @@ jobs:
   npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Run ./ci/steps/publish-npm.sh
         run: ./ci/steps/publish-npm.sh
@@ -27,7 +27,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Run ./ci/steps/push-docker-manifest.sh
         run: ./ci/steps/push-docker-manifest.sh
@@ -49,7 +49,7 @@ jobs:
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Configure git
         run: |
           git config user.name github-actions
